@@ -35,8 +35,7 @@
                             ショップ一覧
                         </x-dropdown-link>
 
-                        {{--  <x-dropdown-link :href="route('owner.profile.edit')">  --}}
-                        <x-dropdown-link :href="route('profile.edit')">
+                        <x-dropdown-link :href="route('owner.profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
@@ -90,8 +89,7 @@
                     ショップ一覧
                 </x-responsive-nav-link>
 
-                {{--  <x-responsive-nav-link :href="route('owner.profile.edit')">  --}}
-                <x-responsive-nav-link :href="route('profile.edit')">
+                <x-responsive-nav-link :href="route('owner.profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
