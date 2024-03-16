@@ -22,7 +22,7 @@ class OwnerShopController extends Controller
         return view('owner.shop.create');
     }
 
-    // ショップ情報登録処理
+    // ショップ情報保存処理
     public function store(Request $request)
     {
         // dd($request);
@@ -31,7 +31,9 @@ class OwnerShopController extends Controller
         // dd($validatedData);
 
         // ログインユーザーのIDと一緒にデータを保存
+        $userID = auth()->user()->id;
         $shop = auth()->user()->shops()->create($validatedData);
+        $shopID = $shop->id;
 
         // 支払い情報を保存（別テーブルも下記の書き方でOK）
         // $shop->paymentMethods()->create([
@@ -41,13 +43,57 @@ class OwnerShopController extends Controller
         for ($i = 1; $i <= 4; $i++) {
             $imageField = "shop_image{$i}";
             if ($request->hasFile($imageField)) {
-                $imagePath = $request->file($imageField)->store("shop_images/{$shop->id}", 'public');
+                $imagePath = $request->file($imageField)->store("{$userID}/{$shopID}", 'public');
                 // 保存した画像のパスを対応する shop_image カラムに保存
                 $shop->update([$imageField => $imagePath]);
             }
         }
 
         return redirect()->route('owner.shop.index')->with('success', 'ショップ情報が登録されました');
+    }
+
+    // ショップ情報画面
+    public function edit($id)
+    {
+        // 現在ログインしているユーザーに紐付けられたショップのみを取得
+        $shop = Auth::user()->shops()->findOrFail($id);
+        return view('owner.shop.edit', compact('shop'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validationRules = $this->validateRules();
+        $validatedData = $request->validate($validationRules);
+
+        // ログインユーザーに紐づくショップ情報を取得
+        $userID = auth()->user()->id;
+        $shop = auth()->user()->shops()->findOrFail($id);
+        // 画像を更新するかチェック
+        for ($i = 1; $i <= 4; $i++) {
+            $imageField = "shop_image{$i}";
+            if ($request->hasFile($imageField)) {
+                // 古い画像を削除する
+                if ($shop->{$imageField}) {
+                    Storage::disk('public')->delete($shop->{$imageField});
+                }
+                $imagePath = $request->file($imageField)->store("{$userID}/{$id}", 'public');
+                $validatedData[$imageField] = $imagePath;
+            }
+        }
+
+        // データの更新
+        $shop->update($validatedData);
+        return redirect()->route('owner.shop.index')->with('success', 'ショップ情報が更新されました');
+    }
+
+    public function destroy($id)
+    {
+        $userID = auth()->id();
+        $directoryPath = "/{$userID}/{$id}";
+        Storage::disk("public")->deleteDirectory($directoryPath);
+        $shop = auth()->user()->shops()->findOrFail($id);
+        $shop->delete();
+        return redirect()->route('owner.shop.index')->with('success', 'ショップが削除されました');
     }
 
     public function validateRules()

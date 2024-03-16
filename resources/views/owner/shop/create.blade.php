@@ -116,7 +116,7 @@
             </x-form-group>
             <x-form-group>
                 <x-form-label
-                    label="任意"
+                    label="必須"
                     text="都道府県"
                     for="pref"
                 />

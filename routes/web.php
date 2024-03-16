@@ -32,10 +32,9 @@ Route::prefix('owner')->middleware('auth')->group(function () {
     Route::post('/shop', [OwnerShopController::class, 'store'])->name('owner.shop.store');
     // ショップ情報登録画面へのルート
     Route::get('/shop/create', [OwnerShopController::class, 'create'])->name('owner.shop.create');
-    // ショップ情報更新処理へのルート
-    // Route::get('/shop/{id}', [OwnerShopController::class, 'edit'])->name('owner.shop.edit');
-    // Route::put('/shop/{id}', [OwnerShopController::class, 'update'])->name('owner.shop.update');
-    // Route::delete('/shop/{id}', [OwnerShopController::class, 'destroy'])->name('owner.shop.destroy');
+    Route::get('/shop/{id}', [OwnerShopController::class, 'edit'])->name('owner.shop.edit');
+    Route::put('/shop/{id}', [OwnerShopController::class, 'update'])->name('owner.shop.update');
+    Route::delete('/shop/{id}', [OwnerShopController::class, 'destroy'])->name('owner.shop.destroy');
 });
 
 Route::middleware('auth')->group(function () {

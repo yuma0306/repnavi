@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+// 追加
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -47,11 +49,10 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+        Storage::disk('public')->deleteDirectory($user->id);
 
         Auth::logout();
-
         $user->delete();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
